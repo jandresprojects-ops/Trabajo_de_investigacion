@@ -6,7 +6,7 @@
 * **Asignatura:** Estructura de datos 
 
 * **Integrantes:** 
-  - Cristian Alberto Gomez Cardona - Matrícula: [Matrícula]
+  - Christian Alberto Gomez Cardona - Matrícula: [20256832]
   - Humberto Federico Mendoza Flores - Matrícula: [Matrícula]
   - Josue Abisai Andres Paulino - Matrícula: [Matrícula]
 * **Docente:** LUIS EDUARDO MORAN LOPEZ

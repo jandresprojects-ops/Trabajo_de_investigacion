@@ -7,7 +7,7 @@
 
 * **Integrantes:** 
   - Christian Alberto Gomez Cardona - Matrícula: [20256832]
-  - Humberto Federico Mendoza Flores - Matrícula: [Matrícula]
+  - Humberto Federico Mendoza Flores - Matrícula: [20256832]
   - Josue Abisai Andres Paulino - Matrícula: [Matrícula]
 * **Docente:** LUIS EDUARDO MORAN LOPEZ
 * **Fecha:** 27 de noviembre de 2026

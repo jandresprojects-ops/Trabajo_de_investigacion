@@ -1,133 +1,214 @@
-import json
-import time
-import copy
-from typing import List, Tuple, Dict, Any
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <windows.h>
 
-# ==============================================================================
-# 1. METADATOS TEÓRICOS EXTRAÍDOS DEL REPORTE TÉCNICO
-# ==============================================================================
-REPORTE_TEORICO = {
-    "grupo": "Grupo Cuadrático",
-    "descripcion": "Algoritmos iterativos in-place con complejidad O(n²) en caso promedio y peor caso.",
-    "algoritmos": {
-        "Bubble Sort": {
-            "mejor_caso": "Ω(n)",
-            "caso_promedio": "Θ(n²)",
-            "peor_caso": "O(n²)",
-            "memoria_auxiliar": "Θ(1)",
-            "estable": True,
-            "nota_ingenieria": "Descartar en producción frente a Insertion Sort; ejecuta hasta 3x más escrituras."
-        },
-        "Insertion Sort": {
-            "mejor_caso": "Ω(n)",
-            "caso_promedio": "Θ(n²)",
-            "peor_caso": "O(n²)",
-            "memoria_auxiliar": "Θ(1)",
-            "estable": True,
-            "nota_ingenieria": "Óptimo para n <= 64 o arreglos casi ordenados por alta localidad espacial en caché L1."
+typedef struct
+{
+    long long comparaciones;
+    long long escrituras;
+    double tiempo_ms;
+    bool ordenado_ok;
+} Resultado;
+
+// Ordenamiento Burbuja Optimizado (In-Place)
+void bubble_sort(int *arr, int n, long long *comparaciones, long long *escrituras)
+{
+    *comparaciones = 0;
+    *escrituras = 0;
+    for (int i = 0; i < n - 1; i++)
+    {
+        bool intercambio = false;
+        for (int j = 0; j < n - 1 - i; j++)
+        {
+            (*comparaciones)++;
+            if (arr[j] > arr[j + 1])
+            {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+                *escrituras += 2;
+                intercambio = true;
+            }
         }
+        if (!intercambio)
+            break;
     }
 }
 
-# ==============================================================================
-# 2. IMPLEMENTACIÓN INSTRUMENTADA DE LOS ALGORITMOS (IN-PLACE)
-# ==============================================================================
-def bubble_sort(arr: List[int]) -> Tuple[List[int], int]:
-    """
-    Ordenamiento Burbuja optimizado con bandera booleana.
-    Retorna el arreglo ordenado y el conteo exacto de comparaciones entre claves.
-    """
-    n = len(arr)
-    comparaciones = 0
-    for i in range(n - 1):
-        intercambiado = False
-        for j in range(n - i - 1):
-            comparaciones += 1
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                intercambiado = True
-        if not intercambiado:
-            break
-    return arr, comparaciones
+// Ordenamiento por Inserción (In-Place)
+void insertion_sort(int *arr, int n, long long *comparaciones, long long *escrituras)
+{
+    *comparaciones = 0;
+    *escrituras = 0;
+    for (int i = 1; i < n; i++)
+    {
+        int clave = arr[i];
+        int j = i - 1;
+        while (j >= 0)
+        {
+            (*comparaciones)++;
+            if (arr[j] > clave)
+            {
+                arr[j + 1] = arr[j];
+                (*escrituras)++;
+                j--;
+            }
+            else
+            {
+                break;
+            }
+        }
+        arr[j + 1] = clave;
+        (*escrituras)++;
+    }
+}
 
+bool verificar_ordenado(const int *arr, int n)
+{
+    for (int i = 0; i < n - 1; i++)
+    {
+        if (arr[i] > arr[i + 1])
+            return false;
+    }
+    return true;
+}
 
-def insertion_sort(arr: List[int]) -> Tuple[List[int], int]:
-    """
-    Ordenamiento por Inserción mediante desplazamientos secuenciales.
-    Retorna el arreglo ordenado y el conteo exacto de comparaciones entre claves.
-    """
-    n = len(arr)
-    comparaciones = 0
-    for i in range(1, n):
-        clave = arr[i]
-        j = i - 1
-        while j >= 0:
-            comparaciones += 1
-            if arr[j] > clave:
-                arr[j + 1] = arr[j]
-                j -= 1
-            else:
-                break
-        arr[j + 1] = clave
-    return arr, comparaciones
+// Temporizador nativo de alta precisión en Windows (milisegundos)
+double obtener_tiempo_ms()
+{
+    LARGE_INTEGER frecuencia, contador;
+    QueryPerformanceFrequency(&frecuencia);
+    QueryPerformanceCounter(&contador);
+    return (double)(contador.QuadPart * 1000.0) / (double)frecuencia.QuadPart;
+}
 
+Resultado medir_algoritmo(void (*algoritmo)(int *, int, long long *, long long *), const int *original, int n, int repeticiones_k)
+{
+    Resultado res = {0, 0, 0.0, true};
+    int *copia = (int *)malloc(n * sizeof(int));
+    double suma_tiempos = 0.0;
 
-# ==============================================================================
-# 3. MOTOR DE BENCHMARK Y EVALUACIÓN EXPERIMENTAL
-# ==============================================================================
-def ejecutar_benchmark(ruta_json: str, repeticiones_k: int = 5) -> None:
-    # Cargar los arreglos desde datos_prueba.json
-    with open(ruta_json, "r", encoding="utf-8") as f:
-        datasets: Dict[str, List[int]] = json.load(f)
+    for (int k = 0; k < repeticiones_k; k++)
+    {
+        memcpy(copia, original, n * sizeof(int));
+        long long comp = 0, escr = 0;
 
-    algoritmos_fn = {
-        "Bubble Sort": bubble_sort,
-        "Insertion Sort": insertion_sort
+        double inicio = obtener_tiempo_ms();
+        algoritmo(copia, n, &comp, &escr);
+        double fin = obtener_tiempo_ms();
+
+        suma_tiempos += (fin - inicio);
+        if (k == 0)
+        {
+            res.comparaciones = comp;
+            res.escrituras = escr;
+            res.ordenado_ok = verificar_ordenado(copia, n);
+        }
     }
 
-    print("=" * 95)
-    print(f"EVALUACIÓN EXPERIMENTAL: {REPORTE_TEORICO['grupo'].upper()}")
-    print(f"Descripción: {REPORTE_TEORICO['descripcion']}")
-    print("=" * 95)
+    res.tiempo_ms = suma_tiempos / repeticiones_k;
+    free(copia);
+    return res;
+}
 
-    # Mostrar ficha técnica teórica del reporte
-    for nombre, info in REPORTE_TEORICO["algoritmos"].items():
-        print(f"\n[{nombre}]")
-        print(f"  • Cotas Asintóticas -> Mejor: {info['mejor_caso']} | Promedio: {info['caso_promedio']} | Peor: {info['peor_caso']}")
-        print(f"  • Memoria Auxiliar  -> {info['memoria_auxiliar']} | Estable: {'Sí' if info['estable'] else 'No'}")
-        print(f"  • Criterio Técnico  -> {info['nota_ingenieria']}")
+// Parser sencillo para extraer los arreglos enteros de datos_cuadratica.json
+void procesar_json(const char *ruta_archivo)
+{
+    FILE *f = fopen(ruta_archivo, "rb");
+    if (!f)
+    {
+        printf("Error: No se pudo abrir '%s'. Verifica la ruta.\n", ruta_archivo);
+        return;
+    }
 
-    print("\n" + "=" * 95)
-    print(f"{'Dataset':<18} | {'n':<6} | {'Algoritmo':<15} | {'Tiempo Prom (ms)':<18} | {'Comparaciones':<15}")
-    print("-" * 95)
+    fseek(f, 0, SEEK_END);
+    long tam = ftell(f);
+    fseek(f, 0, SEEK_SET);
 
-    # Evaluar cada conjunto de datos del JSON
-    for nombre_dataset, datos_originales in datasets.items():
-        n = len(datos_originales)
-        
-        for nombre_alg, funcion_sort in algoritmos_fn.items():
-            tiempos_ms = []
-            comparaciones_registradas = 0
+    char *contenido = (char *)malloc(tam + 1);
+    fread(contenido, 1, tam, f);
+    contenido[tam] = '\0';
+    fclose(f);
 
-            for _ in range(repeticiones_k):
-                # Se entrega una copia idéntica en cada corrida para evitar efectos de estado previo
-                copia_datos = datos_originales.copy()
-                
-                inicio = time.perf_counter()
-                arreglo_ordenado, comparaciones = funcion_sort(copia_datos)
-                fin = time.perf_counter()
+    printf("%-16s | %-6s | %-15s | %-13s | %-13s | %-12s | %s\n",
+           "Dataset", "N", "Algoritmo", "Tiempo (ms)", "Comparaciones", "Escrituras", "Estado");
+    printf("-----------------------------------------------------------------------------------------------------\n");
 
-                # Verificación de integridad del ordenamiento
-                assert arreglo_ordenado == sorted(datos_originales), f"Error de ordenamiento en {nombre_alg}"
+    char *cursor = contenido;
+    int *buffer = (int *)malloc(20000 * sizeof(int));
 
-                tiempos_ms.append((fin - inicio) * 1000.0)
-                comparaciones_registradas = comparaciones
+    while ((cursor = strchr(cursor, '"')) != NULL)
+    {
+        char *fin_clave = strchr(cursor + 1, '"');
+        if (!fin_clave)
+            break;
 
-            tiempo_promedio = sum(tiempos_ms) / repeticiones_k
-            print(f"{nombre_dataset:<18} | {n:<6} | {nombre_alg:<15} | {tiempo_promedio:<18.4f} | {comparaciones_registradas:<15,}")
-        print("-" * 95)
+        int len_clave = fin_clave - (cursor + 1);
+        char nombre_dataset[64] = {0};
+        if (len_clave < 63)
+        {
+            strncpy(nombre_dataset, cursor + 1, len_clave);
+        }
 
+        char *inicio_arr = strchr(fin_clave, '[');
+        if (!inicio_arr)
+            break;
+        char *fin_arr = strchr(inicio_arr, ']');
+        if (!fin_arr)
+            break;
 
-if __name__ == "__main__":
-    # Asegúrate de que 'datos_prueba.json' esté en el mismo directorio que este script
-    ejecutar_benchmark("datos_prueba.json", repeticiones_k=5)
+        int n = 0;
+        char *p = inicio_arr + 1;
+        while (p < fin_arr)
+        {
+            while (p < fin_arr && (*p == ' ' || *p == ',' || *p == '\n' || *p == '\r' || *p == '\t'))
+            {
+                p++;
+            }
+            if (p < fin_arr && ((*p >= '0' && *p <= '9') || *p == '-'))
+            {
+                buffer[n++] = (int)strtol(p, &p, 10);
+            }
+            else
+            {
+                p++;
+            }
+        }
+
+        if (n > 0)
+        {
+            Resultado r_bubble = medir_algoritmo(bubble_sort, buffer, n, 5);
+            printf("%-16s | %-6d | %-15s | %11.4f ms | %13lld | %12lld | %s\n",
+                   nombre_dataset, n, "Bubble Sort", r_bubble.tiempo_ms,
+                   r_bubble.comparaciones, r_bubble.escrituras, r_bubble.ordenado_ok ? "OK" : "ERROR");
+
+            Resultado r_insert = medir_algoritmo(insertion_sort, buffer, n, 5);
+            printf("%-16s | %-6d | %-15s | %11.4f ms | %13lld | %12lld | %s\n",
+                   nombre_dataset, n, "Insertion Sort", r_insert.tiempo_ms,
+                   r_insert.comparaciones, r_insert.escrituras, r_insert.ordenado_ok ? "OK" : "ERROR");
+            printf("-----------------------------------------------------------------------------------------------------\n");
+        }
+
+        cursor = fin_arr + 1;
+    }
+
+    free(buffer);
+    free(contenido);
+}
+
+int main()
+{
+    FILE *test = fopen("Data/datos_cuadratica.json", "rb");
+    if (test)
+    {
+        fclose(test);
+        procesar_json("Data/datos_cuadratica.json");
+    }
+    else
+    {
+        procesar_json("../Data/datos_cuadratica.json");
+    }
+    return 0;
+}

@@ -1,0 +1,394 @@
+[
+    {
+        "alg": "qsort",
+        "n": 10,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 438.0
+    },
+    {
+        "alg": "lineal",
+        "n": 10,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.57
+    },
+    {
+        "alg": "lineal",
+        "n": 10,
+        "caso": "centro",
+        "comparaciones": 6,
+        "tiempo_ns": 1.74
+    },
+    {
+        "alg": "lineal",
+        "n": 10,
+        "caso": "final",
+        "comparaciones": 10,
+        "tiempo_ns": 2.92
+    },
+    {
+        "alg": "lineal",
+        "n": 10,
+        "caso": "no_existe",
+        "comparaciones": 10,
+        "tiempo_ns": 2.88
+    },
+    {
+        "alg": "binaria",
+        "n": 10,
+        "caso": "no_existe",
+        "comparaciones": 3,
+        "tiempo_ns": 2.25
+    },
+    {
+        "alg": "lineal",
+        "n": 10,
+        "caso": "promedio",
+        "comparaciones": 5,
+        "tiempo_ns": 2.69
+    },
+    {
+        "alg": "binaria",
+        "n": 10,
+        "caso": "promedio",
+        "comparaciones": 2,
+        "tiempo_ns": 4.07
+    },
+    {
+        "alg": "qsort",
+        "n": 100,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 3758.7
+    },
+    {
+        "alg": "lineal",
+        "n": 100,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.97
+    },
+    {
+        "alg": "lineal",
+        "n": 100,
+        "caso": "centro",
+        "comparaciones": 51,
+        "tiempo_ns": 32.55
+    },
+    {
+        "alg": "lineal",
+        "n": 100,
+        "caso": "final",
+        "comparaciones": 100,
+        "tiempo_ns": 43.26
+    },
+    {
+        "alg": "lineal",
+        "n": 100,
+        "caso": "no_existe",
+        "comparaciones": 100,
+        "tiempo_ns": 47.34
+    },
+    {
+        "alg": "binaria",
+        "n": 100,
+        "caso": "no_existe",
+        "comparaciones": 6,
+        "tiempo_ns": 7.27
+    },
+    {
+        "alg": "lineal",
+        "n": 100,
+        "caso": "promedio",
+        "comparaciones": 49,
+        "tiempo_ns": 29.2
+    },
+    {
+        "alg": "binaria",
+        "n": 100,
+        "caso": "promedio",
+        "comparaciones": 5,
+        "tiempo_ns": 7.47
+    },
+    {
+        "alg": "qsort",
+        "n": 1000,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 56871.0
+    },
+    {
+        "alg": "lineal",
+        "n": 1000,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.63
+    },
+    {
+        "alg": "lineal",
+        "n": 1000,
+        "caso": "centro",
+        "comparaciones": 501,
+        "tiempo_ns": 221.0
+    },
+    {
+        "alg": "lineal",
+        "n": 1000,
+        "caso": "final",
+        "comparaciones": 1000,
+        "tiempo_ns": 375.95
+    },
+    {
+        "alg": "lineal",
+        "n": 1000,
+        "caso": "no_existe",
+        "comparaciones": 1000,
+        "tiempo_ns": 366.84
+    },
+    {
+        "alg": "binaria",
+        "n": 1000,
+        "caso": "no_existe",
+        "comparaciones": 9,
+        "tiempo_ns": 9.05
+    },
+    {
+        "alg": "lineal",
+        "n": 1000,
+        "caso": "promedio",
+        "comparaciones": 495,
+        "tiempo_ns": 211.32
+    },
+    {
+        "alg": "binaria",
+        "n": 1000,
+        "caso": "promedio",
+        "comparaciones": 9,
+        "tiempo_ns": 18.38
+    },
+    {
+        "alg": "qsort",
+        "n": 10000,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 1149759.3
+    },
+    {
+        "alg": "lineal",
+        "n": 10000,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.85
+    },
+    {
+        "alg": "lineal",
+        "n": 10000,
+        "caso": "centro",
+        "comparaciones": 5001,
+        "tiempo_ns": 2357.07
+    },
+    {
+        "alg": "lineal",
+        "n": 10000,
+        "caso": "final",
+        "comparaciones": 10000,
+        "tiempo_ns": 3120.95
+    },
+    {
+        "alg": "lineal",
+        "n": 10000,
+        "caso": "no_existe",
+        "comparaciones": 10000,
+        "tiempo_ns": 3111.35
+    },
+    {
+        "alg": "binaria",
+        "n": 10000,
+        "caso": "no_existe",
+        "comparaciones": 13,
+        "tiempo_ns": 12.15
+    },
+    {
+        "alg": "lineal",
+        "n": 10000,
+        "caso": "promedio",
+        "comparaciones": 5214,
+        "tiempo_ns": 1634.39
+    },
+    {
+        "alg": "binaria",
+        "n": 10000,
+        "caso": "promedio",
+        "comparaciones": 12,
+        "tiempo_ns": 44.98
+    },
+    {
+        "alg": "qsort",
+        "n": 100000,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 11834898.7
+    },
+    {
+        "alg": "lineal",
+        "n": 100000,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.86
+    },
+    {
+        "alg": "lineal",
+        "n": 100000,
+        "caso": "centro",
+        "comparaciones": 50001,
+        "tiempo_ns": 15369.03
+    },
+    {
+        "alg": "lineal",
+        "n": 100000,
+        "caso": "final",
+        "comparaciones": 100000,
+        "tiempo_ns": 33080.7
+    },
+    {
+        "alg": "lineal",
+        "n": 100000,
+        "caso": "no_existe",
+        "comparaciones": 100000,
+        "tiempo_ns": 32616.58
+    },
+    {
+        "alg": "binaria",
+        "n": 100000,
+        "caso": "no_existe",
+        "comparaciones": 16,
+        "tiempo_ns": 13.04
+    },
+    {
+        "alg": "lineal",
+        "n": 100000,
+        "caso": "promedio",
+        "comparaciones": 49380,
+        "tiempo_ns": 14403.87
+    },
+    {
+        "alg": "binaria",
+        "n": 100000,
+        "caso": "promedio",
+        "comparaciones": 15,
+        "tiempo_ns": 68.56
+    },
+    {
+        "alg": "qsort",
+        "n": 1000000,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 124619478.3
+    },
+    {
+        "alg": "lineal",
+        "n": 1000000,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 0.65
+    },
+    {
+        "alg": "lineal",
+        "n": 1000000,
+        "caso": "centro",
+        "comparaciones": 500001,
+        "tiempo_ns": 176936.35
+    },
+    {
+        "alg": "lineal",
+        "n": 1000000,
+        "caso": "final",
+        "comparaciones": 1000000,
+        "tiempo_ns": 442526.72
+    },
+    {
+        "alg": "lineal",
+        "n": 1000000,
+        "caso": "no_existe",
+        "comparaciones": 1000000,
+        "tiempo_ns": 367845.09
+    },
+    {
+        "alg": "binaria",
+        "n": 1000000,
+        "caso": "no_existe",
+        "comparaciones": 19,
+        "tiempo_ns": 19.42
+    },
+    {
+        "alg": "lineal",
+        "n": 1000000,
+        "caso": "promedio",
+        "comparaciones": 510028,
+        "tiempo_ns": 212891.12
+    },
+    {
+        "alg": "binaria",
+        "n": 1000000,
+        "caso": "promedio",
+        "comparaciones": 18,
+        "tiempo_ns": 111.81
+    },
+    {
+        "alg": "qsort",
+        "n": 10000000,
+        "caso": "ordenar",
+        "comparaciones": 0,
+        "tiempo_ns": 1639517243.7
+    },
+    {
+        "alg": "lineal",
+        "n": 10000000,
+        "caso": "inicio",
+        "comparaciones": 1,
+        "tiempo_ns": 1.14
+    },
+    {
+        "alg": "lineal",
+        "n": 10000000,
+        "caso": "centro",
+        "comparaciones": 5000001,
+        "tiempo_ns": 2046374.58
+    },
+    {
+        "alg": "lineal",
+        "n": 10000000,
+        "caso": "final",
+        "comparaciones": 10000000,
+        "tiempo_ns": 4005860.84
+    },
+    {
+        "alg": "lineal",
+        "n": 10000000,
+        "caso": "no_existe",
+        "comparaciones": 10000000,
+        "tiempo_ns": 3905594.05
+    },
+    {
+        "alg": "binaria",
+        "n": 10000000,
+        "caso": "no_existe",
+        "comparaciones": 23,
+        "tiempo_ns": 26.7
+    },
+    {
+        "alg": "lineal",
+        "n": 10000000,
+        "caso": "promedio",
+        "comparaciones": 5144954,
+        "tiempo_ns": 1948538.26
+    },
+    {
+        "alg": "binaria",
+        "n": 10000000,
+        "caso": "promedio",
+        "comparaciones": 22,
+        "tiempo_ns": 332.08
+    }
+]

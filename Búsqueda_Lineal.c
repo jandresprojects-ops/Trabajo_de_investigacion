@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 
-#define NT 1000      /* objetivos aleatorios para el caso promedio */
+#define NT 1000 /* objetivos aleatorios para el caso promedio */
 #define TRIALS 5
 
-long cmpL;           /* comparaciones de la busqueda lineal   */
-long cmpB;           /* comparaciones de la busqueda binaria  */
-long sink;           /* evita que el compilador borre las busquedas */
+long cmpL; /* comparaciones de la busqueda lineal   */
+long cmpB; /* comparaciones de la busqueda binaria  */
+long sink; /* evita que el compilador borre las busquedas */
 
 int busquedaLineal(int *arr, int n, int buscado)
 {
@@ -47,9 +48,12 @@ int comparar(const void *a, const void *b)
 
 double ahora()
 {
-	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return ts.tv_sec * 1e9 + ts.tv_nsec;
+	static LARGE_INTEGER freq = {0};
+	LARGE_INTEGER count;
+	if (freq.QuadPart == 0)
+		QueryPerformanceFrequency(&freq);
+	QueryPerformanceCounter(&count);
+	return ((double)count.QuadPart * 1e9) / (double)freq.QuadPart;
 }
 
 int main()
@@ -78,7 +82,9 @@ int main()
 		for (i = n - 1; i > 0; i--)
 		{
 			j = ((long)rand() * 32768 + rand()) % (i + 1);
-			aux = lin[i]; lin[i] = lin[j]; lin[j] = aux;
+			aux = lin[i];
+			lin[i] = lin[j];
+			lin[j] = aux;
 		}
 		for (i = 0; i < n; i++)
 			ord[i] = i * 2;
@@ -91,7 +97,8 @@ int main()
 		for (tr = 0; tr < 3; tr++)
 		{
 			int *cp = (int *)malloc(n * sizeof(int));
-			for (i = 0; i < n; i++) cp[i] = lin[i];
+			for (i = 0; i < n; i++)
+				cp[i] = lin[i];
 			t1 = ahora();
 			qsort(cp, n, sizeof(int), comparar);
 			t2 = ahora();
@@ -104,10 +111,14 @@ int main()
 		{
 			/* ---------- lineal ---------- */
 			cmp = 0;
-			if (c == 0) obj = lin[0];
-			if (c == 1) obj = lin[n / 2];
-			if (c == 2) obj = lin[n - 1];
-			if (c == 3) obj = -1;
+			if (c == 0)
+				obj = lin[0];
+			if (c == 1)
+				obj = lin[n / 2];
+			if (c == 2)
+				obj = lin[n - 1];
+			if (c == 3)
+				obj = -1;
 			if (c < 4)
 			{
 				busquedaLineal(lin, n, obj);
@@ -125,8 +136,10 @@ int main()
 				cmp = suma / NT;
 				reps = 200000000 / (cmp + 20) / 1;
 			}
-			if (reps < 5) reps = 5;
-			if (reps > 20000000) reps = 20000000;
+			if (reps < 5)
+				reps = 5;
+			if (reps > 20000000)
+				reps = 20000000;
 
 			tot = 0;
 			for (tr = 0; tr < TRIALS; tr++)
@@ -135,7 +148,8 @@ int main()
 				t1 = ahora();
 				for (r = 0; r < reps; r++)
 				{
-					if (c == 4) obj = objs[r % NT];
+					if (c == 4)
+						obj = objs[r % NT];
 					suma += busquedaLineal(lin, n, obj);
 				}
 				t2 = ahora();
@@ -147,8 +161,10 @@ int main()
 			/* ---------- binaria (solo comparacion) ---------- */
 			if (c == 3 || c == 4)
 			{
-				if (c == 3) obj = -1;
-				else obj = objs[0];
+				if (c == 3)
+					obj = -1;
+				else
+					obj = objs[0];
 				busquedaBinaria(ord, n, obj);
 				cmp = cmpB;
 				if (c == 4)
@@ -169,7 +185,8 @@ int main()
 					t1 = ahora();
 					for (r = 0; r < reps; r++)
 					{
-						if (c == 4) obj = objs[r % NT];
+						if (c == 4)
+							obj = objs[r % NT];
 						suma += busquedaBinaria(ord, n, obj);
 					}
 					t2 = ahora();
@@ -179,7 +196,9 @@ int main()
 				sink += suma;
 			}
 		}
-		free(lin); free(ord); free(objs);
+		free(lin);
+		free(ord);
+		free(objs);
 	}
 	return 0;
 }

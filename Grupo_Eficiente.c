@@ -1,231 +1,169 @@
-#include <algorithm>
-#include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <random>
-#include <string>
-#include <vector>
+#include <stdio.h>
 
-using namespace std;
-using namespace chrono;
-
-mt19937 generador(12345);
-
-struct Medidas {
-    long long comparaciones = 0;
-    long long swaps = 0;
-};
-
-static inline void swapCont(vector<int>& a, int i, int j, Medidas& m) {
-    if (i == j) return;
-    swap(a[i], a[j]);
-    m.swaps++;
-}
-
-// QUICK SORT: pivote aleatorio + Lomuto
-int particionQuick(vector<int>& a, int inicio, int fin, Medidas& m) {
-    uniform_int_distribution<int> dist(inicio, fin);
-    int indicePivote = dist(generador);
-    swapCont(a, indicePivote, fin, m);
-
-    int pivote = a[fin];
-    int i = inicio;
-
-    for (int j = inicio; j < fin; j++) {
-        m.comparaciones++;
-        if (a[j] < pivote) {
-            swapCont(a, i, j, m);
-            i++;
-        }
-    }
-    swapCont(a, i, fin, m);
-    return i;
-}
-
-void quickSort(vector<int>& a, int inicio, int fin, Medidas& m) {
-    if (inicio < fin) {
-        int p = particionQuick(a, inicio, fin, m);
-        quickSort(a, inicio, p - 1, m);
-        quickSort(a, p + 1, fin, m);
-    }
-}
+#define MAX 1000
 
 // MERGE SORT
-void combinar(vector<int>& a, vector<int>& aux,
-              int inicio, int medio, int fin, Medidas& m) {
-    int i = inicio;
-    int j = medio + 1;
-    int k = inicio;
+void mezclar(int a[], int inicio, int medio, int fin) {
+    int temp[MAX];
+    int i = inicio, j = medio + 1, k = inicio;
 
     while (i <= medio && j <= fin) {
-        m.comparaciones++;
-        if (a[i] <= a[j]) aux[k++] = a[i++];
-        else aux[k++] = a[j++];
+        if (a[i] <= a[j])
+            temp[k++] = a[i++];
+        else
+            temp[k++] = a[j++];
     }
-    while (i <= medio) aux[k++] = a[i++];
-    while (j <= fin) aux[k++] = a[j++];
 
-    for (int x = inicio; x <= fin; x++) a[x] = aux[x];
+    while (i <= medio)
+        temp[k++] = a[i++];
+
+    while (j <= fin)
+        temp[k++] = a[j++];
+
+    for (i = inicio; i <= fin; i++)
+        a[i] = temp[i];
 }
 
-void mergeSort(vector<int>& a, vector<int>& aux,
-               int inicio, int fin, Medidas& m) {
-    if (inicio >= fin) return;
-    int medio = inicio + (fin - inicio) / 2;
-    mergeSort(a, aux, inicio, medio, m);
-    mergeSort(a, aux, medio + 1, fin, m);
-    combinar(a, aux, inicio, medio, fin, m);
-}
+void mergeSort(int a[], int inicio, int fin) {
+    if (inicio < fin) {
+        int medio = (inicio + fin) / 2;
 
-// HEAP SORT (max-heap)
-void ajustarHeap(vector<int>& a, int n, int raiz, Medidas& m) {
-    int mayor = raiz;
-    int izquierdo = 2 * raiz + 1;
-    int derecho = 2 * raiz + 2;
-
-    if (izquierdo < n) {
-        m.comparaciones++;
-        if (a[izquierdo] > a[mayor]) mayor = izquierdo;
-    }
-    if (derecho < n) {
-        m.comparaciones++;
-        if (a[derecho] > a[mayor]) mayor = derecho;
-    }
-
-    if (mayor != raiz) {
-        swapCont(a, raiz, mayor, m);
-        ajustarHeap(a, n, mayor, m);
+        mergeSort(a, inicio, medio);
+        mergeSort(a, medio + 1, fin);
+        mezclar(a, inicio, medio, fin);
     }
 }
 
-void heapSort(vector<int>& a, Medidas& m) {
-    int n = (int)a.size();
+// QUICK SORT
+int particionar(int a[], int bajo, int alto) {
+    int pivote = a[alto];
+    int i = bajo - 1;
 
-    for (int i = n / 2 - 1; i >= 0; i--) ajustarHeap(a, n, i, m);
-    for (int i = n - 1; i > 0; i--) {
-        swapCont(a, 0, i, m);
-        ajustarHeap(a, i, 0, m);
-    }
-}
-
-// INSERTION SORT
-void insertionSort(vector<int>& a, Medidas& m) {
-    for (int i = 1; i < (int)a.size(); i++) {
-        int actual = a[i];
-        int j = i - 1;
-
-        while (j >= 0) {
-            m.comparaciones++;
-            if (a[j] > actual) {
-                a[j + 1] = a[j];
-                m.swaps++;
-                j--;
-            } else {
-                break;
-            }
+    for (int j = bajo; j < alto; j++) {
+        if (a[j] <= pivote) {
+            i++;
+            int temp = a[i];
+            a[i] = a[j];
+            a[j] = temp;
         }
-        a[j + 1] = actual;
+    }
+
+    int temp = a[i + 1];
+    a[i + 1] = a[alto];
+    a[alto] = temp;
+
+    return i + 1;
+}
+
+void quickSort(int a[], int bajo, int alto) {
+    if (bajo < alto) {
+        int p = particionar(a, bajo, alto);
+
+        quickSort(a, bajo, p - 1);
+        quickSort(a, p + 1, alto);
     }
 }
 
-vector<int> generarDatos(int n, const string& tipo) {
-    vector<int> datos(n);
-    for (int i = 0; i < n; i++) datos[i] = i + 1;
+// HEAP SORT
+void heapify(int a[], int n, int i) {
+    int mayor = i;
+    int izquierda = 2 * i + 1;
+    int derecha = 2 * i + 2;
 
-    if (tipo == "Aleatorios") {
-        shuffle(datos.begin(), datos.end(), generador);
-    } else if (tipo == "Inversos") {
-        reverse(datos.begin(), datos.end());
+    if (izquierda < n && a[izquierda] > a[mayor])
+        mayor = izquierda;
+
+    if (derecha < n && a[derecha] > a[mayor])
+        mayor = derecha;
+
+    if (mayor != i) {
+        int temp = a[i];
+        a[i] = a[mayor];
+        a[mayor] = temp;
+
+        heapify(a, n, mayor);
     }
-    return datos;
 }
 
+void heapSort(int a[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(a, n, i);
+
+    for (int i = n - 1; i > 0; i--) {
+        int temp = a[0];
+        a[0] = a[i];
+        a[i] = temp;
+
+        heapify(a, i, 0);
+    }
+}
+
+// MOSTRAR ARREGLO
+void mostrar(int a[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", a[i]);
+
+    printf("\n");
+}
+
+// PROGRAMA PRINCIPAL
 int main() {
-    const vector<int> tamanos = {100, 500, 1000, 3000, 5000};
-    const vector<string> tipos = {"Aleatorios", "Ordenados", "Inversos"};
-    const int repeticiones = 5;
+    int numeros[MAX];
+    int n, opcion;
 
-    filesystem::create_directories("resultados");
+    printf("=================================\n");
+    printf("   ALGORITMOS DE ORDENAMIENTO\n");
+    printf("=================================\n");
 
-    ofstream archivo("resultados/resultados.csv");
-    if (!archivo.is_open()) {
-        cerr << "No se pudo crear resultados/resultados.csv\n";
+    printf("Cuantos numeros deseas ingresar? ");
+    scanf("%d", &n);
+
+    if (n < 1 || n > MAX) {
+        printf("Cantidad no valida.\n");
         return 1;
     }
 
-    archivo << "Tipo,N,Algoritmo,Tiempo_promedio_ms,"
-               "Comparaciones_promedio,Swaps_movimientos_promedio\n";
+    printf("\nIngresa los numeros:\n");
 
-    const string nombres[] = {"Quick Sort", "Merge Sort", "Heap Sort", "Insertion Sort"};
-
-    for (const string& tipo : tipos) {
-        for (int n : tamanos) {
-            for (int algoritmo = 0; algoritmo < 4; algoritmo++) {
-
-                double tiempoTotal = 0.0;
-                Medidas totales;
-
-                vector<int> aux;
-                if (algoritmo == 1) aux.resize(n);
-
-                for (int rep = 0; rep < repeticiones; rep++) {
-                    vector<int> datos = generarDatos(n, tipo);
-                    Medidas m;
-
-                    auto inicio = steady_clock::now();
-
-                    switch (algoritmo) {
-                        case 0:
-                            quickSort(datos, 0, n - 1, m);
-                            break;
-                        case 1:
-                            mergeSort(datos, aux, 0, n - 1, m);
-                            break;
-                        case 2:
-                            heapSort(datos, m);
-                            break;
-                        case 3:
-                            insertionSort(datos, m);
-                            break;
-                    }
-
-                    auto fin = steady_clock::now();
-
-                    double milisegundos =
-                        duration<double, milli>(fin - inicio).count();
-
-                    if (!is_sorted(datos.begin(), datos.end())) {
-                        cerr << "Error: un algoritmo no ordeno correctamente.\n";
-                        return 1;
-                    }
-
-                    tiempoTotal += milisegundos;
-                    totales.comparaciones += m.comparaciones;
-                    totales.swaps += m.swaps;
-                }
-
-                double tiempoPromedio = tiempoTotal / repeticiones;
-                double comparacionesPromedio =
-                    (double)totales.comparaciones / repeticiones;
-                double swapsPromedio = (double)totales.swaps / repeticiones;
-
-                archivo << tipo << "," << n << "," << nombres[algoritmo] << ","
-                        << fixed << setprecision(6) << tiempoPromedio << ","
-                        << setprecision(2) << comparacionesPromedio << ","
-                        << setprecision(2) << swapsPromedio << "\n";
-
-                cout << tipo << " | N=" << n
-                     << " | " << nombres[algoritmo]
-                     << " | Tiempo: " << fixed << setprecision(6) << tiempoPromedio << " ms"
-                     << " | Comparaciones: " << setprecision(2) << comparacionesPromedio
-                     << " | Mov/Swaps: " << setprecision(2) << swapsPromedio << "\n";
-            }
-        }
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &numeros[i]);
     }
 
-    archivo.close();
-    cout << "\nPruebas terminadas. Archivo: resultados/resultados.csv\n";
+    printf("\nArreglo original:\n");
+    mostrar(numeros, n);
+
+    printf("\nSelecciona un algoritmo:\n");
+    printf("1. Merge Sort\n");
+    printf("2. Quick Sort\n");
+    printf("3. Heap Sort\n");
+    printf("Opcion: ");
+    scanf("%d", &opcion);
+
+    switch (opcion) {
+        case 1:
+            mergeSort(numeros, 0, n - 1);
+            printf("\nMetodo utilizado: Merge Sort\n");
+            break;
+
+        case 2:
+            quickSort(numeros, 0, n - 1);
+            printf("\nMetodo utilizado: Quick Sort\n");
+            break;
+
+        case 3:
+            heapSort(numeros, n);
+            printf("\nMetodo utilizado: Heap Sort\n");
+            break;
+
+        default:
+            printf("Opcion no valida.\n");
+            return 1;
+    }
+
+    printf("\nArreglo ordenado:\n");
+    mostrar(numeros, n);
+
+    printf("\nOrdenamiento terminado correctamente.\n");
+
     return 0;
 }
